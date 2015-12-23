@@ -1,3 +1,3 @@
-* TODO URL decoding of various fields
+* DONE URL decoding of various fields
 * TODO Base64 decoding of some fields
-* TODO Splitting query parameters
+* DONE Splitting query parameters
