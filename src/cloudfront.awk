@@ -46,6 +46,10 @@ END {
     numFields = length(fields)
 }
 
+/^#/ {
+    # ignore anything else starting with "#"
+}
+
 ! /^#/ {
     split($0, fieldsThisLine, " ", sepsThrowAway)
     print "\t{"
