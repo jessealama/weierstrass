@@ -1,3 +1,4 @@
 * DONE URL decoding of various fields
 * TODO Base64 decoding of some fields
 * DONE Splitting query parameters
+* TODO Rendering whole directories full of CloudFront logs
