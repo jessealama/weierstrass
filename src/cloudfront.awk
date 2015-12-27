@@ -52,10 +52,12 @@ END {
 
 ! /^#/ {
     split($0, fieldsThisLine, " ", sepsThrowAway)
-    print "\t{"
-    for(i = 1; i < numFields; i++)
-    {
-        printf "\t\t\"%s\": \"%s\",\n", fields[i], fieldsThisLine[i]
+    if (NF == numFields) {
+        print "\t{"
+        for(i = 1; i < NF; i++)
+        {
+            printf "\t\t\"%s\": \"%s\",\n", fields[i], fieldsThisLine[i]
+        }
+        print "\t},"
     }
-    print "\t},"
 }
