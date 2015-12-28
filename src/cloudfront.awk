@@ -1,4 +1,4 @@
-function printUrlQueryString(queryString)
+function printUrlQueryString(queryString, j)
 {
     split(queryString, pairs, "&", seps)
     len = length(pairs)
