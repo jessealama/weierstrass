@@ -16,7 +16,7 @@ function base64Decode(thing)
   return x
 }
 
-function urlDecode(url) {
+function urlDecode(url, i) {
     for (i = 0x20; i < 0x40; ++i) {
         repl = sprintf("%c", i);
         if ((repl == "&") || (repl == "\\")) {
