@@ -1,9 +1,9 @@
 function printUrlQueryString(queryString, j)
 {
-    split(queryString, pairs, "&", seps)
+    split(queryString, pairs, "&")
     len = length(pairs)
     for (j = 1; j < len; ++j) {
-        split(pairs[j], keyValue, "=", seps2)
+        split(pairs[j], keyValue, "=")
         k = keyValue[1]
         v = keyValue[2]
         printf "\t\t\"%s\": \"%s\",\n", k, urlDecode(urlDecode(v))
