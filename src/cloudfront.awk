@@ -6,7 +6,11 @@ function printUrlQueryString(queryString, j)
         split(pairs[j], keyValue, "=")
         k = keyValue[1]
         v = keyValue[2]
-        printf "\t\t\"%s\": \"%s\",\n", k, urlDecode(urlDecode(v))
+        printf "\t\t\t\t\"%s\": \"%s\"", k, urlDecode(urlDecode(v))
+        if (j + 1 < len) {
+            printf ","
+        }
+        printf "\n"
     }
 }
 
@@ -34,6 +38,7 @@ BEGIN {
 }
 
 END {
+    printf "\n\t]\n"
     print "}"
 }
 
@@ -45,6 +50,7 @@ END {
     rest = substr($0, length("#Fields: ") + 1)
     split(rest, fields, " ")
     numFields = length(fields)
+    printf "\t\"records\": [\n"
 }
 
 /^#/ {
@@ -58,7 +64,7 @@ END {
     split($0, fieldsThisLine, " ")
     urlIndex = 0
     if (NF == numFields) {
-        print "\t{"
+        print "\t\t{"
         for(i = 1; i < NF; i++)
         {
             fieldName = fields[i]
@@ -68,18 +74,18 @@ END {
             }
             fieldValue = fieldsThisLine[i]
             maybeDecoded = (fieldName == "cs-uri-query" ? urlDecode(fieldValue) : fieldValue)
-            printf "\t\t\"%s\": \"%s\"", fieldName, fieldValue
+            printf "\t\t\t\"%s\": \"%s\"", fieldName, fieldValue
             if (i + 1 < NF && urlIndex > 0) {
                 printf ","
             }
             printf "\n"
         }
         if (urlIndex > 0) {
-            printf "\t\t\"cs-url-query\": {\n"
+            printf "\t\t\t\"cs-url-query\": {\n"
             printUrlQueryString(fieldsThisLine[urlIndex])
-            printf "}\n"
+            printf "\t\t\t}\n"
         }
-        printf "\t}"
+        printf "\t\t}"
     }
     logLineSeen = 1;
 }
