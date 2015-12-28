@@ -1,17 +1,13 @@
 function printUrlQueryString(queryString, j)
 {
     split(queryString, pairs, "&")
-    len = length(pairs)
     for (j = 1; j < len; ++j) {
         split(pairs[j], keyValue, "=")
         k = keyValue[1]
         v = keyValue[2]
-        printf "\t\t\t\t\"%s\": \"%s\"", k, urlDecode(urlDecode(v))
-        if (j + 1 < len) {
-            printf ","
-        }
-        printf "\n"
+        result[k] = v
     }
+    return result
 }
 
 function base64Decode(thing)
@@ -33,24 +29,81 @@ function urlDecode(url, i) {
 }
 
 BEGIN {
-    logLineSeen = 0
-    print "{";
+
+}
+
+function enrich(property, n, j)
+{
+    if ("cs-uri-query" == property) {
+        queryString = logs[n][property]
+        delete logs[n][property]
+        parsed = urlDecode(queryString)
+        split(queryString, pairs, "&")
+        len = length(pairs)
+        for (j = 1; j < len; ++j) {
+            split(pairs[j], keyValue, "=")
+            k = keyValue[1]
+            v = keyValue[2]
+            result[k] = v
+            logs[n][property][k] = v
+        }
+    }
 }
 
 END {
-    printf "\n\t]\n"
+    print "{"
+    printf "\"version\": \"%s\",\n", version
+    print "\"records\": ["
+    numLogs = length(logs)
+    i = 1
+    for (lineNr in logs)
+    {
+        printf "{\n";
+        j = 1
+        for (j = 1; j < numFields; j++)
+        {
+            field = fields[j]
+            enrich(field, lineNr)
+            if(isarray(logs[lineNr][field])) {
+                printf "\"%s\": {\n", field
+                k = 1
+                numSubFields = length(logs[lineNr][field])
+                for (subField in logs[lineNr][field]) {
+                    printf "\"%s\": \"%s\"", subField, logs[lineNr][field][subField]
+                    if (k < numSubFields) {
+                        printf ","
+                    }
+                    k++
+                    printf "\n"
+                }
+                print "}"
+            } else {
+                printf "\"%s\": \"%s\"", field, logs[lineNr][field]
+            }
+            if (j + 1 < numFields) {
+                printf ","
+            }
+            printf "\n"
+        }
+        printf "}"
+        if (i < numLogs) {
+            printf ","
+        }
+        printf "\n"
+        i++
+    }
+    print "]"
     print "}"
 }
 
 /^#Version: / {
-    printf "\t\"version\": \"%s\",\n", substr($0, length("#Version: ") + 1)
+    version = substr($0, length("#Version: ") + 1)
 }
 
 /^#Fields: / {
     rest = substr($0, length("#Fields: ") + 1)
     split(rest, fields, " ")
     numFields = length(fields)
-    printf "\t\"records\": [\n"
 }
 
 /^#/ {
@@ -58,34 +111,10 @@ END {
 }
 
 ! /^#/ {
-    if (logLineSeen == 1) {
-        printf ",\n"
-    }
     split($0, fieldsThisLine, " ")
-    urlIndex = 0
-    if (NF == numFields) {
-        print "\t\t{"
-        for(i = 1; i < NF; i++)
-        {
-            fieldName = fields[i]
-            if (fieldName == "cs-uri-query") {
-                urlIndex = i;
-                continue;
-            }
-            fieldValue = fieldsThisLine[i]
-            maybeDecoded = (fieldName == "cs-uri-query" ? urlDecode(fieldValue) : fieldValue)
-            printf "\t\t\t\"%s\": \"%s\"", fieldName, fieldValue
-            if (i + 1 < NF && urlIndex > 0) {
-                printf ","
-            }
-            printf "\n"
-        }
-        if (urlIndex > 0) {
-            printf "\t\t\t\"cs-url-query\": {\n"
-            printUrlQueryString(fieldsThisLine[urlIndex])
-            printf "\t\t\t}\n"
-        }
-        printf "\t\t}"
+    numFieldsThisLine = length(fieldsThisLine)
+    for (i = 1; i < numFieldsThisLine; i++)
+    {
+         logs[NR][fields[i]] = fieldsThisLine[i]
     }
-    logLineSeen = 1;
 }
