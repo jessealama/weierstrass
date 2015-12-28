@@ -38,6 +38,7 @@ END {
 
 /^#Version: / {
     printf "\t\"version\": \"%s\",\n", substr($0, length("#Version: ") + 1)
+    logLineSeen = 0
 }
 
 /^#Fields: / {
@@ -51,13 +52,21 @@ END {
 }
 
 ! /^#/ {
+    if (logLineSeen == 1) {
+        printf ",\n"
+    }
     split($0, fieldsThisLine, " ")
     if (NF == numFields) {
         print "\t{"
         for(i = 1; i < NF; i++)
         {
-            printf "\t\t\"%s\": \"%s\",\n", fields[i], fieldsThisLine[i]
+            printf "\t\t\"%s\": \"%s\"", fields[i], fieldsThisLine[i]
+            if (i + 1 < NF) {
+                printf ","
+            }
+            printf "\n"
         }
-        print "\t},"
+        printf "\t}"
     }
+    logLineSeen = 1;
 }
