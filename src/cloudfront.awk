@@ -29,6 +29,7 @@ function urlDecode(url) {
 }
 
 BEGIN {
+    logLineSeen = 0
     print "{";
 }
 
@@ -38,7 +39,6 @@ END {
 
 /^#Version: / {
     printf "\t\"version\": \"%s\",\n", substr($0, length("#Version: ") + 1)
-    logLineSeen = 0
 }
 
 /^#Fields: / {
