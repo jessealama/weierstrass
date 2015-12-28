@@ -56,15 +56,28 @@ END {
         printf ",\n"
     }
     split($0, fieldsThisLine, " ")
+    urlIndex = 0
     if (NF == numFields) {
         print "\t{"
         for(i = 1; i < NF; i++)
         {
-            printf "\t\t\"%s\": \"%s\"", fields[i], fieldsThisLine[i]
-            if (i + 1 < NF) {
+            fieldName = fields[i]
+            if (fieldName == "cs-uri-query") {
+                urlIndex = i;
+                continue;
+            }
+            fieldValue = fieldsThisLine[i]
+            maybeDecoded = (fieldName == "cs-uri-query" ? urlDecode(fieldValue) : fieldValue)
+            printf "\t\t\"%s\": \"%s\"", fieldName, fieldValue
+            if (i + 1 < NF && urlIndex > 0) {
                 printf ","
             }
             printf "\n"
+        }
+        if (urlIndex > 0) {
+            printf "\t\t\"cs-url-query\": {\n"
+            printUrlQueryString(fieldsThisLine[urlIndex])
+            printf "}\n"
         }
         printf "\t}"
     }
