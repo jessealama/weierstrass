@@ -42,7 +42,7 @@ END {
 
 /^#Fields: / {
     rest = substr($0, length("#Fields: ") + 1)
-    split(rest, fields, " ", seps)
+    split(rest, fields, " ")
     numFields = length(fields)
 }
 
@@ -51,7 +51,7 @@ END {
 }
 
 ! /^#/ {
-    split($0, fieldsThisLine, " ", sepsThrowAway)
+    split($0, fieldsThisLine, " ")
     if (NF == numFields) {
         print "\t{"
         for(i = 1; i < NF; i++)
