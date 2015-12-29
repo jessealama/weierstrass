@@ -1,21 +1,3 @@
-function printUrlQueryString(queryString, j)
-{
-    split(queryString, pairs, "&")
-    for (j = 1; j < len; ++j) {
-        split(pairs[j], keyValue, "=")
-        k = keyValue[1]
-        v = keyValue[2]
-        result[k] = v
-    }
-    return result
-}
-
-function base64Decode(thing)
-{
-  "echo "$thing" | base64 --decode" | getline x
-  return x
-}
-
 function urlDecode(url, i) {
     for (i = 0x20; i < 0x40; ++i) {
         repl = sprintf("%c", i);
