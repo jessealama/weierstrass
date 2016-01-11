@@ -11,7 +11,8 @@ function urlDecode(url, i) {
 }
 
 BEGIN {
-
+    numFiles = 0
+    print "["
 }
 
 function enrich(property, n, j)
@@ -22,7 +23,7 @@ function enrich(property, n, j)
         parsed = urlDecode(queryString)
         split(queryString, pairs, "&")
         len = length(pairs)
-        for (j = 1; j < len; ++j) {
+        for (j = 1; j <= len; j++) {
             split(pairs[j], keyValue, "=")
             k = keyValue[1]
             v = keyValue[2]
@@ -41,8 +42,7 @@ END {
     for (lineNr in logs)
     {
         printf "{\n";
-        j = 1
-        for (j = 1; j < numFields; j++)
+        for (j = 1; j <= numFields; j++)
         {
             field = fields[j]
             enrich(field, lineNr)
@@ -58,11 +58,11 @@ END {
                     k++
                     printf "\n"
                 }
-                print "}"
+                printf "}"
             } else {
                 printf "\"%s\": \"%s\"", field, logs[lineNr][field]
             }
-            if (j + 1 < numFields) {
+            if (j < numFields) {
                 printf ","
             }
             printf "\n"
@@ -75,7 +75,16 @@ END {
         i++
     }
     print "]"
-    print "}"
+    printf "}"
+    if (numFiles + 1 < ARGC) {
+        printf ","
+    }
+    printf "\n"
+    print "]"
+}
+
+ENDFILE {
+    numFiles++
 }
 
 /^#Version: / {
@@ -95,7 +104,7 @@ END {
 ! /^#/ {
     split($0, fieldsThisLine, " ")
     numFieldsThisLine = length(fieldsThisLine)
-    for (i = 1; i < numFieldsThisLine; i++)
+    for (i = 1; i <= numFieldsThisLine; i++)
     {
          logs[NR][fields[i]] = fieldsThisLine[i]
     }
