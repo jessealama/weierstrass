@@ -45,6 +45,7 @@ if not isdir(dir):
     exit(1)
 
 gzs = glob(join(dir, '*.gz'))
+logs = []
 
 for gz in gzs:
     log = readGzipLog(gz)
@@ -80,4 +81,6 @@ for gz in gzs:
                             val += '=' * ((4 - len(val) % 4) % 4)
                             newVal = base64.b64decode(val, '-_').decode()
                             record['cs-uri-query'][key] = json.loads(newVal)
-    print(log)
+    logs.append(log)
+
+print(json.dumps(logs))
