@@ -34,7 +34,8 @@ def readGzipLog(gzippedLogFile):
             lines.append(record)
     return {
         'version': version,
-        'lines': lines
+        'lines': lines,
+        'path': gzippedLogFile
     }
 
 dir = sys.argv[1]
