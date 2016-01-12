@@ -78,8 +78,6 @@ for gz in gzs:
                         elif key == 'ue_px':
                             val = record['cs-uri-query'][key]
                             val += '=' * ((4 - len(val) % 4) % 4)
-                            # print('about to base64 decode this fucker:')
-                            # print(val)
                             newVal = base64.b64decode(val, '-_').decode()
                             record['cs-uri-query'][key] = json.loads(newVal)
     print(log)
