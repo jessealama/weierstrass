@@ -38,13 +38,9 @@ def readGzipLog(gzippedLogFile):
         'path': gzippedLogFile
     }
 
-dir = sys.argv[1]
+arg = sys.argv[1]
 
-if not isdir(dir):
-    print("'" + dir + "' is not a directory.")
-    exit(1)
-
-gzs = glob(join(dir, '*.gz'))
+gzs = glob(join(arg, '*.gz')) if isdir(arg) else [arg]
 logs = []
 
 for gz in gzs:
