@@ -72,7 +72,7 @@ for gz in gzs:
                         if key == 'url' or key == 'tz' or key == 'page' or key == 'refr' or key == 'se_la':
                             val = record['cs-uri-query'][key]
                             record['cs-uri-query'][key] = urllib.parse.unquote(urllib.parse.unquote(val))
-                        elif key == 'ue_px':
+                        elif key == 'ue_px' or key == 'cx':
                             val = record['cs-uri-query'][key]
                             val += '=' * ((4 - len(val) % 4) % 4)
                             newVal = base64.b64decode(val, '-_').decode()
